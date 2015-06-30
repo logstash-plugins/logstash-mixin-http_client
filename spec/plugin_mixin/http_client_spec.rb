@@ -22,15 +22,15 @@ describe LogStash::PluginMixins::HttpClient do
   end
 
   it "#client should return the client" do
-    expect(impl.client).to be_a(Manticore::Client)
+    expect(impl.send(:client)).to be_a(Manticore::Client)
   end
 
   it "#client should return the same client" do
-    expect(impl.client).to eql(impl.client)
+    expect(impl.send(:client)).to eql(impl.client)
   end
 
   shared_examples "setting ca bundles" do |key|
-    subject { Dummy.new(conf).client_config }
+    subject { Dummy.new(conf).send(:client_config) }
 
     it "should correctly set the path" do
       expect(subject[:ssl][key]).to eql(path)
@@ -53,5 +53,42 @@ describe LogStash::PluginMixins::HttpClient do
 
       include_examples("setting ca bundles", :truststore)
     end
+  end
+
+  describe "with a client cert" do
+    let(:file) { Stud::Temporary.file }
+    let(:path) { file.path }
+    after { File.unlink(path)}
+
+    context "with correct client certs" do
+      let(:conf) { basic_config.merge("client_cert" => path, "client_key" => path) }
+
+      it "should create without error" do
+        expect {
+          Dummy.new(conf).client_config
+        }.not_to raise_error
+      end
+    end
+
+    shared_examples("raising a configuration error") do
+      it "should raise an error error" do
+        expect {
+          Dummy.new(conf).client_config
+        }.to raise_error(LogStash::PluginMixins::HttpClient::InvalidHTTPConfigError)
+      end
+    end
+
+    context "without a key" do
+      let(:conf) { basic_config.merge("client_cert" => path) }
+
+      include_examples("raising a configuration error")
+    end
+
+    context "without a cert" do
+      let(:conf) { basic_config.merge("client_key" => path) }
+
+      include_examples("raising a configuration error")
+    end
+
   end
 end
