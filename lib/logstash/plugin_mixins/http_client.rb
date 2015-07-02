@@ -1,9 +1,9 @@
 # encoding: utf-8
 require "logstash/config/mixin"
 
-# This module provides helper for the `AWS-SDK` v1,
-# and it will be deprecated in the near future, please use the V2 module
-# for any new development.
+# This module makes it easy to add a very fully configured HTTP client to logstash
+# based on [Manticore](https://github.com/cheald/manticore).
+# For an example of its usage see https://github.com/logstash-plugins/logstash-input-http_poller
 module LogStash::PluginMixins::HttpClient
   class InvalidHTTPConfigError < StandardError; end
 
