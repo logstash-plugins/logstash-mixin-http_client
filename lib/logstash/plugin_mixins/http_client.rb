@@ -33,6 +33,10 @@ module LogStash::PluginMixins::HttpClient
     # Max number of concurrent connections to a single host. Defaults to 25
     config :pool_max_per_route, :validate => :number, :default => 25
 
+    # Specify this if you want to keep the TCP connection open between requests
+    # using HTTP Keep-Alive. Defaults to 0 (off)
+    config :keepalive, :validate => :number, :default => 0
+
     # How many times should the client retry a failing URL? Default is 3
     config :automatic_retries, :validate => :number, :default => 3
 
@@ -76,6 +80,7 @@ module LogStash::PluginMixins::HttpClient
       pool_max: @pool_max,
       pool_max_per_route: @pool_max_per_route,
       cookies: @cookies,
+      keepalive: @keepalive
     }
 
     if @proxy
