@@ -102,7 +102,7 @@ module LogStash::PluginMixins::HttpClient
 
       # JKS files have optional passwords if programatically created
       if (@truststore_password)
-        c[:ssl].merge!(truststore_password: @truststore_password)
+        c[:ssl].merge!(truststore_password: @truststore_password.value)
       end
     end
     if @client_cert && @client_key
