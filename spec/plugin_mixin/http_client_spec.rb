@@ -9,7 +9,7 @@ end
 
 describe LogStash::PluginMixins::HttpClient do
   let(:basic_config) { {} }
-  let(:impl) { Dummy.new(basic_config)  }
+  let(:impl) { Dummy.new(basic_config) }
 
   it "should initialize with no extra settings" do
     expect {

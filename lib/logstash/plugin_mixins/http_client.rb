@@ -65,7 +65,7 @@ module LogStash::PluginMixins::HttpClient
 
     # If you'd like to use a client certificate (note, most people don't want this) set the path to the x509 cert here
     config :client_cert, :validate => :path
-    # If you'd like to use a client certificate (note, most people don't want this) set the path to the x509 key here
+    # If you're using a client certificate specify the path to the encryption key here
     config :client_key, :validate => :path
   end
 
@@ -96,8 +96,8 @@ module LogStash::PluginMixins::HttpClient
     end
     if (@truststore_path)
       c[:ssl].merge!(
-        truststore: @truststore_path,
-        truststore_type: @truststore_type
+        :truststore => @truststore_path,
+        :truststore_type => @truststore_type
       )
 
       # JKS files have optional passwords if programatically created
