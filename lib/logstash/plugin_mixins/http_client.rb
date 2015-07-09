@@ -1,10 +1,12 @@
 # encoding: utf-8
 require "logstash/config/mixin"
 
-# This module provides helper for the `AWS-SDK` v1,
-# and it will be deprecated in the near future, please use the V2 module
-# for any new development.
+# This module makes it easy to add a very fully configured HTTP client to logstash
+# based on [Manticore](https://github.com/cheald/manticore).
+# For an example of its usage see https://github.com/logstash-plugins/logstash-input-http_poller
 module LogStash::PluginMixins::HttpClient
+  class InvalidHTTPConfigError < StandardError; end
+
   def self.included(base)
     require 'manticore'
     base.extend(self)
@@ -31,6 +33,9 @@ module LogStash::PluginMixins::HttpClient
     # Max number of concurrent connections to a single host. Defaults to 25
     config :pool_max_per_route, :validate => :number, :default => 25
 
+    # Turn this on to enable HTTP keepalive support
+    config :keepalive, :validate => :boolean, :default => true
+
     # How many times should the client retry a failing URL? Default is 3
     config :automatic_retries, :validate => :number, :default => 3
 
@@ -42,7 +47,10 @@ module LogStash::PluginMixins::HttpClient
 
     # Specify the keystore password here.
     # Note, most .jks files created with keytool require a password!
-    config :truststore_password, :validate => :string
+    config :truststore_password, :validate => :password
+
+    # Specify the keystore type here. One of "JKS" or "PKCS12". Default is "JKS"
+    config :truststore_type, :validate => :string, :default => "JKS"
 
     # Enable cookie support. With this enabled the client will persist cookies
     # across requests as a normal web browser would. Enabled by default
@@ -53,6 +61,11 @@ module LogStash::PluginMixins::HttpClient
     # 2. Proxy host in form: {host => "proxy.org", port => 80, scheme => 'http', user => 'username@host', password => 'password'}
     # 3. Proxy host in form: {url =>  'http://proxy.org:1234', user => 'username@host', password => 'password'}
     config :proxy
+
+    # If you'd like to use a client certificate (note, most people don't want this) set the path to the x509 cert here
+    config :client_cert, :validate => :path
+    # If you're using a client certificate specify the path to the encryption key here
+    config :client_key, :validate => :path
   end
 
   public
@@ -66,6 +79,7 @@ module LogStash::PluginMixins::HttpClient
       pool_max: @pool_max,
       pool_max_per_route: @pool_max_per_route,
       cookies: @cookies,
+      keepalive: @keepalive
     }
 
     if @proxy
@@ -81,13 +95,20 @@ module LogStash::PluginMixins::HttpClient
     end
     if (@truststore_path)
       c[:ssl].merge!(
-        truststore: @truststore_path
+        :truststore => @truststore_path,
+        :truststore_type => @truststore_type
       )
 
       # JKS files have optional passwords if programatically created
       if (@truststore_password)
-        c[:ssl].merge!(truststore_password: @truststore_password)
+        c[:ssl].merge!(truststore_password: @truststore_password.value)
       end
+    end
+    if @client_cert && @client_key
+      c[:ssl][:client_cert] = @client_cert
+      c[:ssl][:client_key] = @client_key
+    elsif !!@client_cert ^ !!@client_key
+      raise InvalidHTTPConfigError, "You must specify both client_cert and client_key for an HTTP client, or neither!"
     end
 
     c

@@ -1,4 +1,6 @@
-# Usage
+# Easily Add an HTTP Client to your Logstash Plugin!
+
+HTTP clients have a lot of configurable options (proxies, certificates, headers, etc.), and specifying all of these with proper validation for a logstash plugin can be irritating. We built this plugin while building our [HTTP Poller Input](https://github.com/logstash-plugins/logstash-input-http_poller). If you need to build a plugin that works primarily based around HTTP this mixin makes it easy and consistent! It is based on [Manticore](https://github.com/cheald/manticore) a lightning quick, fully featured JRuby HTTP client based on Apache Commons HTTP Client.`
 
 This is a plugin for [Logstash](https://github.com/elasticsearch/logstash).
 
@@ -8,7 +10,7 @@ This plugin exposes the following options:
 
 ```ruby
 # Timeout (in seconds) for the entire request
-request_timeout, :validate => :number, :default => 60
+config :request_timeout, :validate => :number, :default => 60
 
 # Timeout (in seconds) to wait for data on the socket. Default is 10s
 config :socket_timeout, :validate => :number, :default => 10
@@ -25,6 +27,9 @@ config :pool_max, :validate => :number, :default => 50
 # Max number of concurrent connections to a single host. Defaults to 25
 config :pool_max_per_route, :validate => :number, :default => 25
 
+# Enable HTTP keepalive support, enabled by default
+config :keepalive, :validate => :boolean, :default => true
+
 # How many times should the client retry a failing URL? Default is 3
 config :automatic_retries, :validate => :number, :default => 3
 
@@ -36,7 +41,10 @@ config :truststore_path, :validate => :path
 
 # Specify the keystore password here.
 # Note, most .jks files created with keytool require a password!
-config :truststore_password, :validate => :string
+config :truststore_password, :validate => :password
+
+# Specify the keystore type here. One of "JKS" or "PKCS12". Default is "JKS"
+config :truststore_type, :validate => :string, :default => "JKS"
 
 # Enable cookie support. With this enabled the client will persist cookies
 # across requests as a normal web browser would. Enabled by default
@@ -47,6 +55,11 @@ config :cookies, :validate => :boolean, :default => true
 # 2. Proxy host in form: {host => "proxy.org", port => 80, scheme => 'http', user => 'username@host', password => 'password'}
 # 3. Proxy host in form: {url =>  'http://proxy.org:1234', user => 'username@host', password => 'password'}
 config :proxy
+
+# If you'd like to use a client certificate (note, most people don't want this) set the path to the x509 cert here
+config :client_cert, :validate => :path
+# If you'd like to use a client certificate (note, most people don't want this) set the path to the x509 key here
+config :client_key, :validate => :path
 ```
 
 ## Documentation
