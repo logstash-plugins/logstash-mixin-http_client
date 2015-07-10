@@ -40,10 +40,10 @@ module LogStash::PluginMixins::HttpClient
     config :automatic_retries, :validate => :number, :default => 3
 
     # If you need to use a custom X.509 CA (.pem certs) specify the path to that here
-    config :ca_path, :validate => :path
+    config :cacert, :validate => :path
 
     # If you need to use a custom keystore (.jks) specify that here
-    config :truststore_path, :validate => :path
+    config :truststore, :validate => :path
 
     # Specify the keystore password here.
     # Note, most .jks files created with keytool require a password!
@@ -90,12 +90,12 @@ module LogStash::PluginMixins::HttpClient
     end
 
     c[:ssl] = {}
-    if @ca_path
-      c[:ssl][:ca_file] = @ca_path
+    if @cacert
+      c[:ssl][:ca_file] = @cacert
     end
-    if (@truststore_path)
+    if (@truststore)
       c[:ssl].merge!(
-        :truststore => @truststore_path,
+        :truststore => @truststore,
         :truststore_type => @truststore_type
       )
 
