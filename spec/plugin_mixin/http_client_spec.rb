@@ -43,13 +43,13 @@ describe LogStash::PluginMixins::HttpClient do
     after { File.unlink(path)}
 
     context "with x509" do
-      let(:conf) { basic_config.merge("ca_path" => path) }
+      let(:conf) { basic_config.merge("cacert" => path) }
 
       include_examples("setting ca bundles", :ca_file)
     end
 
     context "with JKS" do
-      let(:conf) { basic_config.merge("truststore_path" => path) }
+      let(:conf) { basic_config.merge("truststore" => path) }
 
       include_examples("setting ca bundles", :truststore)
     end
