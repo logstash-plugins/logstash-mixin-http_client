@@ -18,38 +18,38 @@ module LogStash::PluginMixins::HttpClient
     # Timeout (in seconds) for the entire request
     config :request_timeout, :validate => :number, :default => 60
 
-    # Timeout (in seconds) to wait for data on the socket. Default is 10s
+    # Timeout (in seconds) to wait for data on the socket. Default is `10s`
     config :socket_timeout, :validate => :number, :default => 10
 
-    # Timeout (in seconds) to wait for a connection to be established. Default is 10s
+    # Timeout (in seconds) to wait for a connection to be established. Default is `10s`
     config :connect_timeout, :validate => :number, :default => 10
 
-    # Should redirects be followed? Defaults to true
+    # Should redirects be followed? Defaults to `true`
     config :follow_redirects, :validate => :boolean, :default => true
 
-    # Max number of concurrent connections. Defaults to 50
+    # Max number of concurrent connections. Defaults to `50`
     config :pool_max, :validate => :number, :default => 50
 
-    # Max number of concurrent connections to a single host. Defaults to 25
+    # Max number of concurrent connections to a single host. Defaults to `25`
     config :pool_max_per_route, :validate => :number, :default => 25
 
     # Turn this on to enable HTTP keepalive support
     config :keepalive, :validate => :boolean, :default => true
 
-    # How many times should the client retry a failing URL? Default is 0
+    # How many times should the client retry a failing URL? Default is `0`
     config :automatic_retries, :validate => :number, :default => 0
 
-    # If you need to use a custom X.509 CA (.pem certs) specify the path to that here
+    # If you need to use a custom X.509 CA (`.pem` certs) specify the path to that here
     config :cacert, :validate => :path
 
-    # If you need to use a custom keystore (.jks) specify that here
+    # If you need to use a custom keystore (`.jks`) specify that here
     config :truststore, :validate => :path
 
     # Specify the keystore password here.
     # Note, most .jks files created with keytool require a password!
     config :truststore_password, :validate => :password
 
-    # Specify the keystore type here. One of "JKS" or "PKCS12". Default is "JKS"
+    # Specify the keystore type here. One of `JKS` or `PKCS12`. Default is `JKS`
     config :truststore_type, :validate => :string, :default => "JKS"
 
     # Enable cookie support. With this enabled the client will persist cookies
@@ -57,9 +57,10 @@ module LogStash::PluginMixins::HttpClient
     config :cookies, :validate => :boolean, :default => true
 
     # If you'd like to use an HTTP proxy . This supports multiple configuration syntaxes:
-    # 1. Proxy host in form: http://proxy.org:1234
-    # 2. Proxy host in form: {host => "proxy.org", port => 80, scheme => 'http', user => 'username@host', password => 'password'}
-    # 3. Proxy host in form: {url =>  'http://proxy.org:1234', user => 'username@host', password => 'password'}
+    #
+    # 1. Proxy host in form: `http://proxy.org:1234`
+    # 2. Proxy host in form: `{host => "proxy.org", port => 80, scheme => 'http', user => 'username@host', password => 'password'}`
+    # 3. Proxy host in form: `{url =>  'http://proxy.org:1234', user => 'username@host', password => 'password'}`
     config :proxy
 
     # If you'd like to use a client certificate (note, most people don't want this) set the path to the x509 cert here
