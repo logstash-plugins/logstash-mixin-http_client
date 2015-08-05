@@ -41,7 +41,7 @@ module LogStash::PluginMixins::HttpClient
 
     # Set this to false to disable SSL/TLS certificate validation
     # Note: setting this to false is generally considered insecure!
-    config :verify_cert, :validate => :boolean, :default => true
+    config :ssl_certificate_validation, :validate => :boolean, :default => true
 
     # If you need to use a custom X.509 CA (.pem certs) specify the path to that here
     config :cacert, :validate => :path
@@ -85,7 +85,7 @@ module LogStash::PluginMixins::HttpClient
       pool_max_per_route: @pool_max_per_route,
       cookies: @cookies,
       keepalive: @keepalive,
-      verify: @verify_cert
+      verify: @ssl_certificate_validation
     }
 
     if @proxy
