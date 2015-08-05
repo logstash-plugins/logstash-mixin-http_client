@@ -39,7 +39,11 @@ module LogStash::PluginMixins::HttpClient
     # How many times should the client retry a failing URL? Default is `0`
     config :automatic_retries, :validate => :number, :default => 0
 
-    # If you need to use a custom X.509 CA (`.pem` certs) specify the path to that here
+    # Set this to false to disable SSL/TLS certificate validation
+    # Note: setting this to false is generally considered insecure!
+    config :verify_cert, :validate => :boolean, :default => true
+
+    # If you need to use a custom X.509 CA (.pem certs) specify the path to that here
     config :cacert, :validate => :path
 
     # If you need to use a custom keystore (`.jks`) specify that here
@@ -80,7 +84,8 @@ module LogStash::PluginMixins::HttpClient
       pool_max: @pool_max,
       pool_max_per_route: @pool_max_per_route,
       cookies: @cookies,
-      keepalive: @keepalive
+      keepalive: @keepalive,
+      verify: @verify_cert
     }
 
     if @proxy
