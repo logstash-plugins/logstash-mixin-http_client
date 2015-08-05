@@ -1,3 +1,5 @@
+# 1.0.2
+  * Add 'verify_cert' config option
 # 1.0.1
   * Default to 0 automatic_retries
 # 1.0.0
