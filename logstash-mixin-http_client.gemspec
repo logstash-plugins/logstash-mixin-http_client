@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
 
   # Gem dependencies
-  s.add_runtime_dependency "logstash-core", ">= 2.0.0", "< 3.0.0"
+  s.add_runtime_dependency "logstash-core", "~> 2.0.0.snapshot"
   s.add_runtime_dependency 'logstash-codec-plain'
   s.add_runtime_dependency 'manticore', '>= 0.4.1'
 
