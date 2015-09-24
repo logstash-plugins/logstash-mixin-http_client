@@ -46,14 +46,29 @@ module LogStash::PluginMixins::HttpClient
     # If you need to use a custom X.509 CA (.pem certs) specify the path to that here
     config :cacert, :validate => :path
 
-    # If you need to use a custom keystore (`.jks`) specify that here
-    config :truststore, :validate => :path
+    # If you'd like to use a client certificate (note, most people don't want this) set the path to the x509 cert here
+    config :client_cert, :validate => :path
+    # If you're using a client certificate specify the path to the encryption key here
+    config :client_key, :validate => :path
+
+    # If you need to use a custom keystore (`.jks`) specify that here. This does not work with .pem keys!
+    config :keystore, :validate => :path
 
     # Specify the keystore password here.
     # Note, most .jks files created with keytool require a password!
-    config :truststore_password, :validate => :password
+    config :keystore_password, :validate => :password
 
     # Specify the keystore type here. One of `JKS` or `PKCS12`. Default is `JKS`
+    config :keystore_type, :validate => :string, :default => "JKS"
+
+    # If you need to use a custom truststore (`.jks`) specify that here. This does not work with .pem certs!
+    config :truststore, :validate => :path
+
+    # Specify the truststore password here.
+    # Note, most .jks files created with keytool require a password!
+    config :truststore_password, :validate => :password
+
+    # Specify the truststore type here. One of `JKS` or `PKCS12`. Default is `JKS`
     config :truststore_type, :validate => :string, :default => "JKS"
 
     # Enable cookie support. With this enabled the client will persist cookies
@@ -66,11 +81,6 @@ module LogStash::PluginMixins::HttpClient
     # 2. Proxy host in form: `{host => "proxy.org", port => 80, scheme => 'http', user => 'username@host', password => 'password'}`
     # 3. Proxy host in form: `{url =>  'http://proxy.org:1234', user => 'username@host', password => 'password'}`
     config :proxy
-
-    # If you'd like to use a client certificate (note, most people don't want this) set the path to the x509 cert here
-    config :client_cert, :validate => :path
-    # If you're using a client certificate specify the path to the encryption key here
-    config :client_key, :validate => :path
   end
 
   public
@@ -99,6 +109,7 @@ module LogStash::PluginMixins::HttpClient
     if @cacert
       c[:ssl][:ca_file] = @cacert
     end
+
     if (@truststore)
       c[:ssl].merge!(
         :truststore => @truststore,
@@ -110,6 +121,19 @@ module LogStash::PluginMixins::HttpClient
         c[:ssl].merge!(truststore_password: @truststore_password.value)
       end
     end
+
+    if (@keystore)
+      c[:ssl].merge!(
+        :keystore => @keystore,
+        :keystore_type => @keystore_type
+      )
+
+      # JKS files have optional passwords if programatically created
+      if (keystore_password)
+        c[:ssl].merge!(keystore_password: @keystore_password.value)
+      end
+    end
+
     if @client_cert && @client_key
       c[:ssl][:client_cert] = @client_cert
       c[:ssl][:client_key] = @client_key
