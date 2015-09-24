@@ -29,11 +29,24 @@ describe LogStash::PluginMixins::HttpClient do
     expect(impl.send(:client)).to eql(impl.client)
   end
 
-  shared_examples "setting ca bundles" do |key|
+  shared_examples "setting ca bundles" do |key, type|
     subject { Dummy.new(conf).send(:client_config) }
 
     it "should correctly set the path" do
-      expect(subject[:ssl][key]).to eql(path)
+      expect(subject[:ssl][key]).to eql(path), "Expected to find path for #{key}"
+    end
+
+    if type == :jks
+      let(:store_password) { conf["#{key}_password"].value}
+      let(:store_type) { conf["#{key}_type"]}
+
+      it "should set the bundle password" do
+        expect(subject[:ssl]["#{key}_password".to_sym]).to eql(store_password)
+      end
+
+      it "should set the bundle type" do
+        expect(subject[:ssl]["#{key}_type".to_sym]).to eql(store_type)
+      end
     end
   end
 
@@ -49,10 +62,33 @@ describe LogStash::PluginMixins::HttpClient do
     end
 
     context "with JKS" do
-      let(:conf) { basic_config.merge("truststore" => path) }
+      let(:conf) {
+        basic_config.merge(
+          "truststore" => path,
+          "truststore_password" => "foobar",
+          "truststore_type" => "jks"
+        )
+      }
 
-      include_examples("setting ca bundles", :truststore)
+      include_examples("setting ca bundles", :truststore, :jks)
     end
+  end
+
+  describe "with a custom keystore" do
+    let(:file) { Stud::Temporary.file }
+    let(:path) { file.path }
+    let(:password) { "foo" }
+    after { File.unlink(path)}
+
+    let(:conf) {
+      basic_config.merge(
+        "keystore" => path,
+        "keystore_password" => "foo",
+        "keystore_type" => "jks"
+      )
+    }
+
+    include_examples("setting ca bundles", :keystore, :jks)
   end
 
   describe "with a client cert" do
