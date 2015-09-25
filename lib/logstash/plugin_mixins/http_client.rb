@@ -110,7 +110,7 @@ module LogStash::PluginMixins::HttpClient
       c[:ssl][:ca_file] = @cacert
     end
 
-    if (@truststore)
+    if @truststore
       c[:ssl].merge!(
         :truststore => @truststore,
         :truststore_type => @truststore_type
@@ -122,14 +122,14 @@ module LogStash::PluginMixins::HttpClient
       end
     end
 
-    if (@keystore)
+    if @keystore
       c[:ssl].merge!(
         :keystore => @keystore,
         :keystore_type => @keystore_type
       )
 
       # JKS files have optional passwords if programatically created
-      if (keystore_password)
+      if keystore_password
         c[:ssl].merge!(keystore_password: @keystore_password.value)
       end
     end
