@@ -37,9 +37,9 @@ module LogStash::PluginMixins::HttpClient
     # one with this to fix interactions with broken keepalive implementations.
     config :keepalive, :validate => :boolean, :default => true
 
-    # How many times should the client retry a failing URL? We highly recommend NOT setting this value
+    # How many times should the client retry a failing URL. We highly recommend NOT setting this value
     # to zero if keepalive is enabled. Some servers incorrectly end keepalives early requiring a retry!
-    # Note, `retry_non_idempotent` is set only GET, HEAD, PUT, DELETE, OPTIONS, and TRACE requests will be retried.
+    # Note: if `retry_non_idempotent` is set only GET, HEAD, PUT, DELETE, OPTIONS, and TRACE requests will be retried.
     config :automatic_retries, :validate => :number, :default => 1
 
     # If `automatic_retries` is enabled this will cause non-idempotent HTTP verbs (such as POST) to be retried.
