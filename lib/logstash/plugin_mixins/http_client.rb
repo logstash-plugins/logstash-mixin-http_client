@@ -33,11 +33,17 @@ module LogStash::PluginMixins::HttpClient
     # Max number of concurrent connections to a single host. Defaults to `25`
     config :pool_max_per_route, :validate => :number, :default => 25
 
-    # Turn this on to enable HTTP keepalive support
+    # Turn this on to enable HTTP keepalive support. We highly recommend setting `automatic_retries` to at least
+    # one with this to fix interactions with broken keepalive implementations.
     config :keepalive, :validate => :boolean, :default => true
 
-    # How many times should the client retry a failing URL? Default is `0`
-    config :automatic_retries, :validate => :number, :default => 0
+    # How many times should the client retry a failing URL? We highly recommend NOT setting this value
+    # to zero if keepalive is enabled. Some servers incorrectly end keepalives early requiring a retry!
+    # Note, `retry_non_idempotent` is set only GET, HEAD, PUT, DELETE, OPTIONS, and TRACE requests will be retried.
+    config :automatic_retries, :validate => :number, :default => 1
+
+    # If `automatic_retries` is enabled this will cause non-idempotent HTTP verbs (such as POST) to be retried.
+    config :retry_non_idempotent, :validate => :boolean, :default => false
 
     # Set this to false to disable SSL/TLS certificate validation
     # Note: setting this to false is generally considered insecure!
@@ -91,6 +97,7 @@ module LogStash::PluginMixins::HttpClient
       request_timeout: @request_timeout,
       follow_redirects: @follow_redirects,
       automatic_retries: @automatic_retries,
+      retry_non_idempotent: @retry_non_idempotent,
       pool_max: @pool_max,
       pool_max_per_route: @pool_max_per_route,
       cookies: @cookies,
