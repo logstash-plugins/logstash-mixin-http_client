@@ -1,3 +1,5 @@
+# 2.2.0
+ * Bump manticore version to be at least 0.5.2 for #close support
 # 2.1.0
  * Default `automatic_retries` to 1 to fix connections to hosts with broken keepalive
  * Add `non_idempotent_retries` option
