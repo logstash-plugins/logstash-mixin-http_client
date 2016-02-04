@@ -74,6 +74,17 @@ describe LogStash::PluginMixins::HttpClient do
     end
   end
 
+  describe "with a custom validate_after_activity" do
+    subject { Dummy.new(client_config).send(:client_config) }
+
+    let(:check_timeout) { 20 }
+    let(:client_config) { basic_config.merge("validate_after_inactivity" => check_timeout )}
+
+    it "should properly set the correct manticore option" do
+      expect(subject[:check_connection_timeout]).to eql(check_timeout)
+    end
+  end
+
   describe "with a custom keystore" do
     let(:file) { Stud::Temporary.file }
     let(:path) { file.path }
