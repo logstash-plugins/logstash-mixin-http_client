@@ -37,7 +37,7 @@ describe LogStash::PluginMixins::HttpClient do
     end
 
     if type == :jks
-      let(:store_password) { conf["#{key}_password"].value}
+      let(:store_password) { conf["#{key}_password"] }
       let(:store_type) { conf["#{key}_type"]}
 
       it "should set the bundle password" do
