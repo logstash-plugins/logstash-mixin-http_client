@@ -45,6 +45,13 @@ module LogStash::PluginMixins::HttpClient
     # If `automatic_retries` is enabled this will cause non-idempotent HTTP verbs (such as POST) to be retried.
     config :retry_non_idempotent, :validate => :boolean, :default => false
 
+    # How long to wait before checking if the connection is stale before executing a request on a connection using keepalive.
+    # # You may want to set this lower, possibly to 0 if you get connection errors regularly
+    # Quoting the Apache commons docs (this client is based Apache Commmons):
+    # 'Defines period of inactivity in milliseconds after which persistent connections must be re-validated prior to being leased to the consumer. Non-positive value passed to this method disables connection validation. This check helps detect connections that have become stale (half-closed) while kept inactive in the pool.'
+    # See https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/impl/conn/PoolingHttpClientConnectionManager.html#setValidateAfterInactivity(int)[these docs for more info]
+    config :validate_after_inactivity, :validate => :number, :default => 200
+
     # Set this to false to disable SSL/TLS certificate validation
     # Note: setting this to false is generally considered insecure!
     config :ssl_certificate_validation, :validate => :boolean, :default => true
@@ -98,6 +105,7 @@ module LogStash::PluginMixins::HttpClient
       follow_redirects: @follow_redirects,
       automatic_retries: @automatic_retries,
       retry_non_idempotent: @retry_non_idempotent,
+      check_connection_timeout: @validate_after_inactivity,
       pool_max: @pool_max,
       pool_max_per_route: @pool_max_per_route,
       cookies: @cookies,

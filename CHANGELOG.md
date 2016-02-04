@@ -1,3 +1,5 @@
+# 2.2.1
+ * Use a superior 'validate_after_inactivity' default of 200ms to force more frequent checks for broken keepalive situations
 # 2.2.0
  * Bump manticore version to be at least 0.5.2 for #close support
 # 2.1.0
