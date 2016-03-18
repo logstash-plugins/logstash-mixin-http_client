@@ -1,3 +1,5 @@
+# 2.2.2
+  - New dependency requirements for logstash-core for the 5.0 release
 # 2.2.1
  * Use a superior 'validate_after_inactivity' default of 200ms to force more frequent checks for broken keepalive situations
 # 2.2.0
