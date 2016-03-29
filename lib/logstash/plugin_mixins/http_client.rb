@@ -54,7 +54,7 @@ module LogStash::PluginMixins::HttpClient
 
     # Set this to false to disable SSL/TLS certificate validation
     # Note: setting this to false is generally considered insecure!
-    config :ssl_certificate_validation, :validate => :string, :default => 'disable'
+    config :ssl_certificate_validation, :validate => :string, :default => 'strict'
 
     # If you need to use a custom X.509 CA (.pem certs) specify the path to that here
     config :cacert, :validate => :path
