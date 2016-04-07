@@ -1,3 +1,5 @@
+# 2.2.4
+  - Fix 'ssl_certificate_validation' option to actually let you disable cert validation
 # 2.2.3
   - Depend on logstash-core-plugin-api instead of logstash-core, removing the need to mass update plugins on major releases of logstash
 # 2.2.2
