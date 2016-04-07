@@ -109,8 +109,7 @@ module LogStash::PluginMixins::HttpClient
       pool_max: @pool_max,
       pool_max_per_route: @pool_max_per_route,
       cookies: @cookies,
-      keepalive: @keepalive,
-      verify: @ssl_certificate_validation
+      keepalive: @keepalive
     }
 
     if @proxy
@@ -120,7 +119,7 @@ module LogStash::PluginMixins::HttpClient
         @proxy
     end
 
-    c[:ssl] = {}
+    c[:ssl] = {verify: @ssl_certificate_validation}
     if @cacert
       c[:ssl][:ca_file] = @cacert
     end
