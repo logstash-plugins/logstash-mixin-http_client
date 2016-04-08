@@ -1,11 +1,10 @@
 # Easily Add an HTTP Client to your Logstash Plugin!
 
-[![Build Status](https://travis-ci.org/logstash-plugins/logstash-mixin-http_client.svg?branch=master)](https://travis-ci.org/logstash-plugins/logstash-mixin-http_client)
+[![Travis Build Status](https://travis-ci.org/logstash-plugins/logstash-mixin-http_client.svg)](https://travis-ci.org/logstash-plugins/logstash-mixin-http_client)
 
 HTTP clients have a lot of configurable options (proxies, certificates, headers, etc.), and specifying all of these with proper validation for a logstash plugin can be irritating. We built this plugin while building our [HTTP Poller Input](https://github.com/logstash-plugins/logstash-input-http_poller). If you need to build a plugin that works primarily based around HTTP this mixin makes it easy and consistent! It is based on [Manticore](https://github.com/cheald/manticore) a lightning quick, fully featured JRuby HTTP client based on Apache Commons HTTP Client.`
 
-[![Build
-Status](http://build-eu-00.elastic.co/view/LS%20Plugins/view/LS%20Mixins/job/logstash-plugin-mixin-http_client-unit/badge/icon)](http://build-eu-00.elastic.co/view/LS%20Plugins/view/LS%20Mixins/job/logstash-plugin-mixin-http_client-unit/)
+[![Travis Build Status](https://travis-ci.org/logstash-plugins/logstash-mixin-http_client.svg)](https://travis-ci.org/logstash-plugins/logstash-mixin-http_client)
 
 This is a plugin for [Logstash](https://github.com/elastic/logstash).
 
