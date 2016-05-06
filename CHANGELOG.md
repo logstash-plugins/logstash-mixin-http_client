@@ -1,3 +1,5 @@
+## 4.0.0
+  - Update the plugin to the version 2.0 of the plugin api, this change is required for Logstash 5.0 compatibility. See https://github.com/elastic/logstash/issues/5141
 # 2.2.4
   - Fix 'ssl_certificate_validation' option to actually let you disable cert validation
 # 2.2.3
