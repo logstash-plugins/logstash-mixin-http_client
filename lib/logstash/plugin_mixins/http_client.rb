@@ -127,24 +127,24 @@ module LogStash::PluginMixins::HttpClient
     if @truststore
       c[:ssl].merge!(
         :truststore => @truststore,
-        :truststore_type => @truststore_type
+        :truststore_type => @truststore_type,
+        :truststore_password => @truststore_password.value
       )
-
-      # JKS files have optional passwords if programatically created
-      if (@truststore_password)
-        c[:ssl].merge!(truststore_password: @truststore_password.value)
+      
+      if c[:ssl][:truststore_password].nil?
+        raise LogStash::ConfigurationError, "Truststore declared without a password! This is not valid, please set the 'truststore_password' option"
       end
     end
 
     if @keystore
       c[:ssl].merge!(
         :keystore => @keystore,
-        :keystore_type => @keystore_type
+        :keystore_type => @keystore_type,
+        :keystore_password => @keystore_password.value
       )
 
-      # JKS files have optional passwords if programatically created
-      if keystore_password
-        c[:ssl].merge!(keystore_password: @keystore_password.value)
+      if c[:ssl][:keystore_password].nil?
+        raise LogStash::ConfigurationError, "Keystore declared without a password! This is not valid, please set the 'keystore_password' option"
       end
     end
 
