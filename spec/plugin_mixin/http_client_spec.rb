@@ -85,21 +85,33 @@ describe LogStash::PluginMixins::HttpClient do
     end
   end
 
-  describe "with a custom keystore" do
-    let(:file) { Stud::Temporary.file }
-    let(:path) { file.path }
-    let(:password) { "foo" }
-    after { File.unlink(path)}
+  ["keystore", "truststore"].each do |store|
+    describe "with a custom #{store}" do
+      let(:file) { Stud::Temporary.file }
+      let(:path) { file.path }
+      let(:password) { "foo" }
+      after { File.unlink(path)}
 
-    let(:conf) {
-      basic_config.merge(
-        "keystore" => path,
-        "keystore_password" => "foo",
-        "keystore_type" => "jks"
-      )
-    }
+      let(:conf) {
+        basic_config.merge(
+          store => path,
+          "#{store}_password" => password,
+          "#{store}_type" => "jks"
+        )
+      }
 
-    include_examples("setting ca bundles", :keystore, :jks)
+      include_examples("setting ca bundles", store.to_sym, :jks)
+
+      context "with no password set" do
+        let(:password) { nil }
+        
+        it "should raise an error" do
+          expect do
+            Dummy.new(conf).client_config
+          end.to raise_error(LogStash::ConfigurationError)
+        end
+      end
+    end
   end
 
   describe "with a client cert" do
