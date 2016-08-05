@@ -52,9 +52,7 @@ module LogStash::PluginMixins::HttpClient
     # See https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/impl/conn/PoolingHttpClientConnectionManager.html#setValidateAfterInactivity(int)[these docs for more info]
     config :validate_after_inactivity, :validate => :number, :default => 200
 
-    # Set this to false to disable SSL/TLS certificate validation
-    # Note: setting this to false is generally considered insecure!
-    config :ssl_certificate_validation, :validate => :boolean, :default => true
+    config :ssl_certificate_validation, :obsolete => "This option did not work in a meaningful way and has been removed! Please use the correct truststore"
 
     # If you need to use a custom X.509 CA (.pem certs) specify the path to that here
     config :cacert, :validate => :path
@@ -119,7 +117,7 @@ module LogStash::PluginMixins::HttpClient
         @proxy
     end
 
-    c[:ssl] = {verify: @ssl_certificate_validation}
+    c[:ssl] = {}
     if @cacert
       c[:ssl][:ca_file] = @cacert
     end

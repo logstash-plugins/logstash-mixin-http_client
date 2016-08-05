@@ -148,26 +148,5 @@ describe LogStash::PluginMixins::HttpClient do
 
       include_examples("raising a configuration error")
     end
-
-    describe "ssl certificate validation" do
-      subject { Dummy.new(conf).send(:client_config) }
-
-      context "when set to true" do
-        let(:conf) { basic_config.merge("ssl_certificate_validation" => true)}
-
-        it "should set [:ssl][:verify] to true" do
-          expect(subject[:ssl][:verify]).to eql(true)
-        end
-      end
-
-      context "when set to false" do
-        let(:conf) { basic_config.merge("ssl_certificate_validation" => false)}
-
-        it "should set [:ssl][:verify] to true" do
-          expect(subject[:ssl][:verify]).to eql(false)
-        end
-      end
-    end
-
   end
 end
