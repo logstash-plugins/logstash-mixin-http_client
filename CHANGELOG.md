@@ -1,3 +1,6 @@
+## 5.0.0
+  - Obsolete ssl_certificate_verify option that didn't actually work
+
 ## 4.0.3
   - Raise configuration error when user supplies a trust/keystore without a password
 
