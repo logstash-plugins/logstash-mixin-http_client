@@ -117,6 +117,10 @@ module LogStash::PluginMixins::HttpClient
         @proxy
     end
 
+    if @auth
+      c[:auth] = @auth.reduce({}) {|memo,(k,v)| memo[k.to_sym] = v; memo}
+    end
+
     c[:ssl] = {}
     if @cacert
       c[:ssl][:ca_file] = @cacert
