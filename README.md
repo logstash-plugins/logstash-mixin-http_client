@@ -64,6 +64,13 @@ config :proxy
 config :client_cert, :validate => :path
 # If you'd like to use a client certificate (note, most people don't want this) set the path to the x509 key here
 config :client_key, :validate => :path
+
+# If you'd like to use authentication. Options available include:
+#
+# user     - username to be used
+# password - password to be used
+# eager    - eagerly offer the Authorization header before the server challenges for it
+config :auth
 ```
 
 ## Documentation
