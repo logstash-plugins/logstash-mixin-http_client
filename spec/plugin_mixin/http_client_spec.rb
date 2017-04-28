@@ -85,6 +85,42 @@ describe LogStash::PluginMixins::HttpClient do
     end
   end
 
+describe "http auth" do
+    subject { Dummy.new(client_config).send(:client_config)[:auth] }
+
+    let(:user) { "myuser" }
+    let(:password) { "mypassword" }
+    let(:client_config) { basic_config.merge("user" => user, "password" => password )}
+
+    it "should set the user correctly in the auth settings" do
+      expect(subject[:user]).to eq(user)
+    end
+
+    it "should set the password correctly in the auth settings" do
+      expect(subject[:password]).to eq(password)
+    end
+
+    it "should always enable eager auth" do
+      expect(subject[:eager]).to eq(true)
+    end
+
+    context "with no user or password" do
+      let(:client_config) { basic_config }
+
+      it "should not set the auth parameter" do
+        expect(subject).to be_nil
+      end
+    end
+
+    context "with a user but no password specified" do
+      let(:client_config) { c = super; c.delete("password"); c }
+
+      it "should raise a configuration error" do
+        expect { subject }.to raise_error(::LogStash::ConfigurationError)
+      end
+    end
+  end
+
   ["keystore", "truststore"].each do |store|
     describe "with a custom #{store}" do
       let(:file) { Stud::Temporary.file }

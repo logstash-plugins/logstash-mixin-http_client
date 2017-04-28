@@ -1,3 +1,6 @@
+# 5.1.0
+  - Add user / password options for HTTP auth
+
 ## 5.0.0
   - Obsolete ssl_certificate_verify option that didn't actually work
 
