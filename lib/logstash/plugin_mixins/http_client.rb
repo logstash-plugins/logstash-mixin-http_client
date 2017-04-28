@@ -93,12 +93,11 @@ module LogStash::PluginMixins::HttpClient
     # 3. Proxy host in form: `{url =>  'http://proxy.org:1234', user => 'username@host', password => 'password'}`
     config :proxy
 
-    # If you'd like to use authentication. Options available include:
-    #
-    # user     - username to be used
-    # password - password to be used
-    # eager    - eagerly offer the Authorization header before the server challenges for it
-    config :auth
+    # Username to use for HTTP auth.
+    config :user, :validate => :string
+
+    # Password to use for HTTP auth
+    config :password, :validate => :password
   end
 
   public
@@ -124,9 +123,17 @@ module LogStash::PluginMixins::HttpClient
         @proxy
     end
 
-    if @auth
+    if @user
+      if !@password || !@password.value
+        raise ::LogStash::ConfigurationError, "User '#{@user}' specified without password!"
+      end
+
       # Symbolize keys if necessary
-      c[:auth] = @auth.reduce({}) {|memo,(k,v)| memo[k.to_sym] = v; memo}
+      c[:auth] = {
+        :user => @user,
+        :password => @password.value,
+        :eager => true
+      }
     end
 
     c[:ssl] = {}
