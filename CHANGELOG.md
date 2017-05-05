@@ -1,3 +1,7 @@
+# 5.2.0
+  - Make ssl_certificate_verify deprecated, not obsolete. We don't want
+    to break compat across major logstash versions
+
 # 5.1.0
   - Add user / password options for HTTP auth
 
