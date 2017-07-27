@@ -1,3 +1,6 @@
+# 6.0.0
+  - Breaking: mark ssl_certificate_verify as obsolete
+
 # 5.2.0
   - Make ssl_certificate_verify deprecated, not obsolete. We don't want
     to break compat across major logstash versions
