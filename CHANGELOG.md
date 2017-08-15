@@ -1,3 +1,6 @@
+## 6.0.1
+  - Fix some documentation issues
+
 # 6.0.0
   - Breaking: mark ssl_certificate_verify as obsolete
 
