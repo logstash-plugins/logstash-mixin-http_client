@@ -52,7 +52,9 @@ module LogStash::PluginMixins::HttpClient
     # See https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/impl/conn/PoolingHttpClientConnectionManager.html#setValidateAfterInactivity(int)[these docs for more info]
     config :validate_after_inactivity, :validate => :number, :default => 200
 
-    config :ssl_certificate_validation, :obsolete  => "This option is obsolete as it never worked correctly."
+    # refer to https://github.com/cheald/manticore/blob/6764e2d3fb67a1ef244cb4610d5b74ba1dd6694c/lib/manticore/client.rb#L161
+    # instead of using symbol, use string "disable" or "false", "browser", "strict"
+    config :ssl_certificate_validation, :validate => :string, :default => "strict"
 
     # If you need to use a custom X.509 CA (.pem certs) specify the path to that here
     config :cacert, :validate => :path
@@ -137,6 +139,12 @@ module LogStash::PluginMixins::HttpClient
     end
 
     c[:ssl] = {}
+    if @ssl_certificate_validation == "disable" || @ssl_certificate_validation == "false"
+      c[:ssl][:verify] = :disable
+    elsif @ssl_certificate_validation == "browser"
+      c[:ssl][:verify] = :browser
+    end
+    
     if @cacert
       c[:ssl][:ca_file] = @cacert
     end
