@@ -52,8 +52,6 @@ module LogStash::PluginMixins::HttpClient
     # See https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/impl/conn/PoolingHttpClientConnectionManager.html#setValidateAfterInactivity(int)[these docs for more info]
     config :validate_after_inactivity, :validate => :number, :default => 200
 
-    config :ssl_certificate_validation, :obsolete  => "This option is obsolete as it never worked correctly."
-
     # If you need to use a custom X.509 CA (.pem certs) specify the path to that here
     config :cacert, :validate => :path
 
