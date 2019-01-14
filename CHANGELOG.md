@@ -1,3 +1,6 @@
+## 7.0.0
+  - Removed obsolete ssl_certificate_verify option
+
 ## 6.0.1
   - Fix some documentation issues
 
