@@ -1,6 +1,3 @@
-## 8.0.0
-  - Re-indroduce ssl_certificate_validation option
-
 ## 7.0.0
   - Removed obsolete ssl_certificate_verify option
 

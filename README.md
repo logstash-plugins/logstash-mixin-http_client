@@ -37,9 +37,6 @@ config :keepalive, :validate => :boolean, :default => true
 # How many times should the client retry a failing URL? Default is 3
 config :automatic_retries, :validate => :number, :default => 3
 
-# If you need to disable certificate hostname validation, set to false
-config :ssl_certificate_validation, :validate => :boolean, :default => true
-
 # If you need to use a custom X.509 CA (.pem certs) specify the path to that here
 config :ca_path, :validate => :path
 
