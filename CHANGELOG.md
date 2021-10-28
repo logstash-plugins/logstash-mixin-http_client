@@ -1,3 +1,6 @@
+## 7.1.0
+  - Add: "lax_redirects" setting to redirect POST/DELETE
+
 ## 7.0.0
   - Removed obsolete ssl_certificate_verify option
 

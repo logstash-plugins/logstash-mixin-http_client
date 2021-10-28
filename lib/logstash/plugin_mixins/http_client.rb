@@ -27,6 +27,9 @@ module LogStash::PluginMixins::HttpClient
     # Should redirects be followed? Defaults to `true`
     config :follow_redirects, :validate => :boolean, :default => true
 
+    # Allow POST and DELETE to also be redirected
+    config :lax_redirects, :validate => :boolean, :default => false
+
     # Max number of concurrent connections. Defaults to `50`
     config :pool_max, :validate => :number, :default => 50
 
@@ -175,7 +178,11 @@ module LogStash::PluginMixins::HttpClient
 
   private
   def make_client
-    Manticore::Client.new(client_config)
+    Manticore::Client.new(client_config) do |builder, _|
+      if @lax_redirects
+        builder.set_redirect_strategy org.apache.http.impl.client.LaxRedirectStrategy.new
+      end
+    end
   end
 
   public
