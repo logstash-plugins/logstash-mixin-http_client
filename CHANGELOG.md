@@ -1,5 +1,8 @@
+## 7.1.0
+  - Feat: add `ssl_verification_mode` [#39](https://github.com/logstash-plugins/logstash-mixin-http_client/pull/39) 
+
 ## 7.0.0
-  - Removed obsolete ssl_certificate_verify option
+  - Removed obsolete `ssl_certificate_verify` option
 
 ## 6.0.1
   - Fix some documentation issues
