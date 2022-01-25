@@ -113,7 +113,7 @@ describe "http auth" do
     end
 
     context "with a user but no password specified" do
-      let(:client_config) { c = super; c.delete("password"); c }
+      let(:client_config) { c = super(); c.delete("password"); c }
 
       it "should raise a configuration error" do
         expect { subject }.to raise_error(::LogStash::ConfigurationError)
