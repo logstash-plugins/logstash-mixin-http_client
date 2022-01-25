@@ -194,7 +194,7 @@ describe LogStash::PluginMixins::HttpClient do
     context "default" do
       let(:conf) { basic_config }
 
-      it "sets manticore verify" do
+      it "sets manticore verify to :strict" do
         expect( Dummy.new(conf).client_config[:ssl] ).to include :verify => :strict
       end
     end
