@@ -210,7 +210,7 @@ describe LogStash::PluginMixins::HttpClient do
     context "'none'" do
       let(:conf) { basic_config.merge("ssl_verification_mode" => 'none') }
 
-      it "sets manticore verify" do
+      it "sets manticore verify to :disable" do
         expect( Dummy.new(conf).client_config[:ssl] ).to include :verify => :disable
       end
     end
