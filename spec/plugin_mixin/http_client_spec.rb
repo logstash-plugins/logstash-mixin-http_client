@@ -85,7 +85,7 @@ describe LogStash::PluginMixins::HttpClient do
     end
   end
 
-describe "http auth" do
+  describe "http auth" do
     subject { Dummy.new(client_config).send(:client_config)[:auth] }
 
     let(:user) { "myuser" }
@@ -184,5 +184,36 @@ describe "http auth" do
 
       include_examples("raising a configuration error")
     end
+  end
+
+  describe "with verify mode" do
+    let(:file) { Stud::Temporary.file }
+    let(:path) { file.path }
+    after { File.unlink(path)}
+
+    context "default" do
+      let(:conf) { basic_config }
+
+      it "sets manticore verify" do
+        expect( Dummy.new(conf).client_config[:ssl] ).to include :verify => :strict
+      end
+    end
+
+    context "'full'" do
+      let(:conf) { basic_config.merge("ssl_verification_mode" => 'full') }
+
+      it "sets manticore verify" do
+        expect( Dummy.new(conf).client_config[:ssl] ).to include :verify => :strict
+      end
+    end
+
+    context "'none'" do
+      let(:conf) { basic_config.merge("ssl_verification_mode" => 'none') }
+
+      it "sets manticore verify" do
+        expect( Dummy.new(conf).client_config[:ssl] ).to include :verify => :disable
+      end
+    end
+
   end
 end

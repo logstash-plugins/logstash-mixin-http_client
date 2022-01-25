@@ -70,6 +70,12 @@ module LogStash::PluginMixins::HttpClient
     # Specify the keystore type here. One of `JKS` or `PKCS12`. Default is `JKS`
     config :keystore_type, :validate => :string, :default => "JKS"
 
+    # Naming aligned with the Elastic stack.
+    #   full: verifies that the provided certificate is signed by a trusted authority (CA) and also verifies that the
+    #         server’s hostname (or IP address) matches the names identified within the certificate
+    #   none: no verification of the server’s certificate
+    config :ssl_verification_mode, :validate => ['full', 'none'], :default => 'full'
+
     # If you need to use a custom truststore (`.jks`) specify that here. This does not work with .pem certs!
     config :truststore, :validate => :path
 
@@ -168,6 +174,17 @@ module LogStash::PluginMixins::HttpClient
       c[:ssl][:client_key] = @client_key
     elsif !!@client_cert ^ !!@client_key
       raise InvalidHTTPConfigError, "You must specify both client_cert and client_key for an HTTP client, or neither!"
+    end
+
+    case @ssl_verification_mode
+    when 'full'
+      # NOTE: would make sense to have :browser here but historically we've used the (:strict) default
+      #
+      # supporting `ssl_verification_mode => strict` the same way ES does might require upstream Manticore
+      # changes -> as in ES/Beats setting `strict` means: "if the SAN is empty return an error"
+      c[:ssl][:verify] = :strict # :default
+    when 'none'
+      c[:ssl][:verify] = :disable
     end
 
     c
