@@ -77,7 +77,7 @@ module LogStash::PluginMixins::HttpClient
     config :ssl_verification_mode, :validate => ['full', 'none'], :default => 'full'
 
     # NOTE: the default setting [] uses Java SSL engine defaults.
-    config :ssl_supported_protocols, :validate => ['TLSv1.1', 'TLSv1.2', 'TLSv1.3'], :default => [], :list => true
+    config :ssl_supported_protocols, :validate => ['SSLv3', 'TLSv1', 'TLSv1.1', 'TLSv1.2', 'TLSv1.3'], :default => [], :list => true
 
     # If you need to use a custom truststore (`.jks`) specify that here. This does not work with .pem certs!
     config :truststore, :validate => :path
