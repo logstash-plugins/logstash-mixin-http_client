@@ -1,3 +1,6 @@
+## 7.2.0
+  - Feat: add `ssl_supported_protocols` option [#40](https://github.com/logstash-plugins/logstash-mixin-http_client/pull/40) 
+
 ## 7.1.0
   - Feat: add `ssl_verification_mode` [#39](https://github.com/logstash-plugins/logstash-mixin-http_client/pull/39) 
 
