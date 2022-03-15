@@ -216,4 +216,39 @@ describe LogStash::PluginMixins::HttpClient do
     end
 
   end
+
+  describe "with supported protocols" do
+    context "default" do
+      let(:conf) { basic_config }
+
+      it "does not set manticore protocols option" do
+        expect( Dummy.new(conf).client_config[:ssl] ).to_not include :protocols
+      end
+    end
+
+    context "empty" do
+      let(:conf) { basic_config.merge("ssl_supported_protocols" => []) }
+
+      it "does not set manticore protocols option" do
+        expect( Dummy.new(conf).client_config[:ssl] ).to_not include :protocols
+      end
+    end
+
+    context "'TLSv1.3'" do
+      let(:conf) { basic_config.merge("ssl_supported_protocols" => ['TLSv1.3']) }
+
+      it "sets manticore protocols option" do
+        expect( Dummy.new(conf).client_config[:ssl] ).to include :protocols => ['TLSv1.3']
+      end
+    end
+
+    context "'TLSv1.2' and 'TLSv1.3'" do
+      let(:conf) { basic_config.merge("ssl_supported_protocols" => ['TLSv1.3', 'TLSv1.2']) }
+
+      it "sets manticore protocols option" do
+        expect( Dummy.new(conf).client_config[:ssl] ).to include :protocols => ['TLSv1.3', 'TLSv1.2']
+      end
+    end
+
+  end
 end
