@@ -105,6 +105,12 @@ module LogStash::PluginMixins::HttpClient
 
     # Password to use for HTTP auth
     config :password, :validate => :password
+
+    # Whether to instruct Manticore to present basic auth credentials on initial
+    # request, rather than being challenged for them. You should only use this
+    # if you have a specific need for it, as it may be a security concern otherwise.
+    # Currently defaults to true for backwards compatibility.
+    config :eager, :validate => :boolean, :default => true
   end
 
   public
@@ -139,7 +145,7 @@ module LogStash::PluginMixins::HttpClient
       c[:auth] = {
         :user => @user,
         :password => @password.value,
-        :eager => true
+        :eager => @eager
       }
     end
 
