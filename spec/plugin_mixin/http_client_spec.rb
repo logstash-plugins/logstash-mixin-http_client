@@ -5,6 +5,7 @@ require "stud/temporary"
 
 class Dummy < LogStash::Inputs::Base
   include LogStash::PluginMixins::HttpClient
+  config_name 'dummy'
 end
 
 describe LogStash::PluginMixins::HttpClient do
@@ -50,6 +51,26 @@ describe LogStash::PluginMixins::HttpClient do
     end
   end
 
+  shared_examples 'a deprecated setting with guidance' do |deprecations_and_guidance|
+
+    let(:logger_stub) { double('Logger').as_null_object }
+
+    before(:each) do
+      allow(Dummy).to receive(:logger).and_return(logger_stub)
+    end
+
+    deprecations_and_guidance.each do |deprecated_setting_name, canonical_setting_name|
+      it "emits a warning about the setting `#{deprecated_setting_name}` being deprecated and provides guidance to use `#{canonical_setting_name}`" do
+        Dummy.new(conf)
+
+        deprecation_text = "deprecated config setting \"#{deprecated_setting_name}\" set"
+        guidance_text = "Use `#{canonical_setting_name}` instead"
+
+        expect(logger_stub).to have_received(:warn).with(a_string_including(deprecation_text).and(including(guidance_text)), anything)
+      end
+    end
+  end
+
   describe "with a custom ssl bundle" do
     let(:file) { Stud::Temporary.file }
     let(:path) { file.path }
@@ -59,6 +80,9 @@ describe LogStash::PluginMixins::HttpClient do
       let(:conf) { basic_config.merge("cacert" => path) }
 
       include_examples("setting ca bundles", :ca_file)
+
+      it_behaves_like('a deprecated setting with guidance',
+                      'cacert' => 'ssl_certificate_authorities')
     end
 
     context "with JKS" do
@@ -71,6 +95,11 @@ describe LogStash::PluginMixins::HttpClient do
       }
 
       include_examples("setting ca bundles", :truststore, :jks)
+
+      it_behaves_like('a deprecated setting with guidance',
+                      'truststore' => 'ssl_truststore_path',
+                      'truststore_password' => 'ssl_truststore_password',
+                      'truststore_type' => 'ssl_truststore_type')
     end
   end
 
@@ -133,10 +162,17 @@ describe LogStash::PluginMixins::HttpClient do
           store => path,
           "#{store}_password" => password,
           "#{store}_type" => "jks"
-        )
+        ).compact
       }
 
       include_examples("setting ca bundles", store.to_sym, :jks)
+
+
+
+      it_behaves_like('a deprecated setting with guidance',
+                      "#{store}" => "ssl_#{store}_path",
+                      "#{store}_password" => "ssl_#{store}_password",
+                      "#{store}_type" => "ssl_#{store}_type")
 
       context "with no password set" do
         let(:password) { nil }
@@ -163,6 +199,10 @@ describe LogStash::PluginMixins::HttpClient do
           Dummy.new(conf).client_config
         }.not_to raise_error
       end
+
+      it_behaves_like('a deprecated setting with guidance',
+                      'client_cert' => 'ssl_certificate',
+                      'client_key' => 'ssl_key')
     end
 
     shared_examples("raising a configuration error") do
