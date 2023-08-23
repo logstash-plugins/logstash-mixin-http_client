@@ -38,13 +38,19 @@ module LogStash::PluginMixins::HttpClient
         end
       end
 
+      params['ssl_certificate_authorities'] = @ssl_certificate_authorities unless @ssl_certificate_authorities.nil?
+
       @ssl_certificate = normalize_config(:ssl_certificate) do |normalize|
         normalize.with_deprecated_alias(:client_cert)
       end
 
+      params['ssl_certificate'] = @ssl_certificate unless @ssl_certificate.nil?
+
       @ssl_key = normalize_config(:ssl_key) do |normalize|
         normalize.with_deprecated_alias(:client_key)
       end
+
+      params['ssl_key'] = @ssl_key unless @ssl_key.nil?
 
       %w[keystore truststore].each do |store|
         %w[path type password].each do |variable|

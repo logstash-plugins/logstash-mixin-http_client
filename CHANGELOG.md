@@ -1,3 +1,17 @@
+## 7.3.0
+  - Standardized SSL settings: [#42](https://github.com/logstash-plugins/logstash-mixin-http_client/pull/42)  
+    - Deprecated `cacert` in favor of `ssl_certificate_authorities`
+    - Deprecated`client_cert` in favor of `ssl_certificate`
+    - Deprecated `client_key` in favor of `ssl_key`
+    - Deprecated `keystore` in favor of `ssl_keystore_path`
+    - Deprecated `keystore_password` in favor of `ssl_keystore_password`
+    - Deprecated `keystore_type` in favor of `ssl_keystore_type`
+    - Deprecated `truststore` in favor of `ssl_truststore_path`
+    - Deprecated `truststore_password` in favor of `ssl_truststore_password`
+    - Deprecated `truststore_type` in favor of `ssl_truststore_type`
+  - Added a module configuration to disable the deprecated SSL configs `:with_deprecated`
+  - Added the `ssl_cipher_suites` option
+
 ## 7.2.0
   - Feat: add `ssl_supported_protocols` option [#40](https://github.com/logstash-plugins/logstash-mixin-http_client/pull/40) 
 

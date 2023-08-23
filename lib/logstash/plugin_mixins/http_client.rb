@@ -80,6 +80,7 @@ module LogStash::PluginMixins::HttpClient
 
       # If you'd like to use a client certificate (note, most people don't want this) set the path to the x509 cert here
       base.config :ssl_certificate, :validate => :path
+
       # If you're using a client certificate specify the path to the encryption key here
       base.config :ssl_key, :validate => :path
 
@@ -90,14 +91,21 @@ module LogStash::PluginMixins::HttpClient
       # Note, most .jks files created with keytool require a password!
       base.config :ssl_keystore_password, :validate => :password
 
-      # Specify the keystore type here. One of `JKS` or `PKCS12`. Default is `JKS`
-      base.config :ssl_keystore_type, :validate => %w(pkcs12 jks), :default => "jks"
+      # Specify the keystore type here. One of `jks` or `pkcs12`.
+      # The default value is inferred from the filename.
+      # Note: If it's unable to determine the type based on the filename, it uses the
+      # `keystore.type` security property, or "jks" as default value.
+      base.config :ssl_keystore_type, :validate => %w(pkcs12 jks)
 
       # Naming aligned with the Elastic stack.
       #   full: verifies that the provided certificate is signed by a trusted authority (CA) and also verifies that the
       #         server’s hostname (or IP address) matches the names identified within the certificate
       #   none: no verification of the server’s certificate
       base.config :ssl_verification_mode, :validate => ['full', 'none'], :default => 'full'
+
+      # The list of cipher suites to use, listed by priorities.
+      # Supported cipher suites vary depending on which version of Java is used.
+      base.config :ssl_cipher_suites, :validate => :string, :list => true
 
       # NOTE: the default setting [] uses Java SSL engine defaults.
       base.config :ssl_supported_protocols, :validate => ['TLSv1.1', 'TLSv1.2', 'TLSv1.3'], :default => [], :list => true
@@ -109,8 +117,11 @@ module LogStash::PluginMixins::HttpClient
       # Note, most .jks files created with keytool require a password!
       base.config :ssl_truststore_password, :validate => :password
 
-      # Specify the truststore type here. One of `JKS` or `PKCS12`. Default is `JKS`
-      base.config :ssl_truststore_type, :validate => %w(pkcs12 jks), :default => "jks"
+      # Specify the truststore type here. One of `JKS` or `PKCS12`.
+      # The default value is inferred from the filename.
+      # Note: If it's unable to determine the type based on the filename, it uses the
+      # `keystore.type` security property, or "jks" as default value.
+      base.config :ssl_truststore_type, :validate => %w(pkcs12 jks)
 
       # Enable cookie support. With this enabled the client will persist cookies
       # across requests as a normal web browser would. Enabled by default
