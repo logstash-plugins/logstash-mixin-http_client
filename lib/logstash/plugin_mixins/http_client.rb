@@ -199,7 +199,7 @@ module LogStash::PluginMixins::HttpClient
         options[:truststore_type] = @ssl_truststore_type if @ssl_truststore_type
         options[:truststore_password] = @ssl_truststore_password.value if @ssl_truststore_password
       elsif @ssl_truststore_password
-        fail LogStash::ConfigurationError, "truststore_password requires ssl_truststore_path you fool"
+        fail LogStash::ConfigurationError, "An `ssl_truststore_password` cannot be specified unless `ssl_truststore_path` is also provided."
       end
 
       if @ssl_keystore_path
@@ -207,7 +207,7 @@ module LogStash::PluginMixins::HttpClient
         options[:keystore_type] = @ssl_keystore_type if @ssl_keystore_type
         options[:keystore_password] = @ssl_keystore_password.value if @ssl_keystore_password
       elsif @ssl_keystore_password
-        fail LogStash::ConfigurationError, "ssl_keystore_password requires ssl_keystore_path you fool"
+        fail LogStash::ConfigurationError, "An `ssl_keystore_password` cannot be specified unless `ssl_keystore_path` is also provided."
       end
 
       if @ssl_certificate && @ssl_key

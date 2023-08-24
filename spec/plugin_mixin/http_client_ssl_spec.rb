@@ -4,10 +4,10 @@ require 'logstash/plugin_mixins/http_client/deprecated_ssl_config_support'
 require 'stud/temporary'
 
 shared_examples 'setting ca bundles' do |key, type|
-  subject { plugin_class.new(conf).send(:client_config) }
+  subject(:client_config) { plugin_class.new(conf).send(:client_config) }
 
   it 'should correctly set the path' do
-    expect(subject[:ssl][key]).to eql(path), "Expected to find path for #{key}"
+    expect(client_config[:ssl][key]).to eql(path), "Expected to find path for #{key}"
   end
 
   if type == :jks
@@ -15,11 +15,11 @@ shared_examples 'setting ca bundles' do |key, type|
     let(:store_type) { conf["#{use_deprecated_config ? '' : 'ssl_'}#{key}_type"]}
 
     it 'should set the bundle password' do
-      expect(subject[:ssl]["#{key}_password".to_sym]).to eql(store_password)
+      expect(client_config[:ssl]["#{key}_password".to_sym]).to eql(store_password)
     end
 
     it 'should set the bundle type' do
-      expect(subject[:ssl]["#{key}_type".to_sym]).to eql(store_type)
+      expect(client_config[:ssl]["#{key}_type".to_sym]).to eql(store_type)
     end
   end
 end
@@ -409,7 +409,7 @@ describe PluginWithDeprecatedTrue do
       }
     end
 
-    subject { plugin_class.new(settings) }
+    subject(:plugin_instance) { plugin_class.new(settings) }
 
     after do
       File.unlink(cacert)
@@ -419,26 +419,26 @@ describe PluginWithDeprecatedTrue do
       File.unlink(truststore)
     end
 
-    it 'should normalize deprecated settings' do
-      expect(subject.ssl_certificate_authorities).to eq([cacert])
-      expect(subject.ssl_certificate).to eq(client_cert)
-      expect(subject.ssl_key).to eq(client_key)
-      expect(subject.ssl_keystore_path).to eq(keystore)
-      expect(subject.ssl_keystore_password.value).to eq(keystore_password)
-      expect(subject.ssl_keystore_type).to eq(keystore_type)
-      expect(subject.ssl_truststore_path).to eq(truststore)
-      expect(subject.ssl_truststore_password.value).to eq(truststore_password)
-      expect(subject.ssl_truststore_type).to eq(truststore_type)
+    it 'normalizes deprecated settings' do
+      expect(plugin_instance.ssl_certificate_authorities).to eq([cacert])
+      expect(plugin_instance.ssl_certificate).to eq(client_cert)
+      expect(plugin_instance.ssl_key).to eq(client_key)
+      expect(plugin_instance.ssl_keystore_path).to eq(keystore)
+      expect(plugin_instance.ssl_keystore_password.value).to eq(keystore_password)
+      expect(plugin_instance.ssl_keystore_type).to eq(keystore_type)
+      expect(plugin_instance.ssl_truststore_path).to eq(truststore)
+      expect(plugin_instance.ssl_truststore_password.value).to eq(truststore_password)
+      expect(plugin_instance.ssl_truststore_type).to eq(truststore_type)
 
-      expect(subject.params['ssl_certificate_authorities']).to eq([cacert])
-      expect(subject.params['ssl_certificate']).to eq(client_cert)
-      expect(subject.params['ssl_key']).to eq(client_key)
-      expect(subject.params['ssl_keystore_path']).to eq(keystore)
-      expect(subject.params['ssl_keystore_password'].value).to eq(keystore_password)
-      expect(subject.params['ssl_keystore_type']).to eq(keystore_type)
-      expect(subject.params['ssl_truststore_path']).to eq(truststore)
-      expect(subject.params['ssl_truststore_password'].value).to eq(truststore_password)
-      expect(subject.params['ssl_truststore_type']).to eq(truststore_type)
+      expect(plugin_instance.params['ssl_certificate_authorities']).to eq([cacert])
+      expect(plugin_instance.params['ssl_certificate']).to eq(client_cert)
+      expect(plugin_instance.params['ssl_key']).to eq(client_key)
+      expect(plugin_instance.params['ssl_keystore_path']).to eq(keystore)
+      expect(plugin_instance.params['ssl_keystore_password'].value).to eq(keystore_password)
+      expect(plugin_instance.params['ssl_keystore_type']).to eq(keystore_type)
+      expect(plugin_instance.params['ssl_truststore_path']).to eq(truststore)
+      expect(plugin_instance.params['ssl_truststore_password'].value).to eq(truststore_password)
+      expect(plugin_instance.params['ssl_truststore_type']).to eq(truststore_type)
     end
   end
 
