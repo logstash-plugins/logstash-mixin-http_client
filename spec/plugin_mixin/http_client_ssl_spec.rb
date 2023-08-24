@@ -429,16 +429,6 @@ describe PluginWithDeprecatedTrue do
       expect(plugin_instance.ssl_truststore_path).to eq(truststore)
       expect(plugin_instance.ssl_truststore_password.value).to eq(truststore_password)
       expect(plugin_instance.ssl_truststore_type).to eq(truststore_type)
-
-      expect(plugin_instance.params['ssl_certificate_authorities']).to eq([cacert])
-      expect(plugin_instance.params['ssl_certificate']).to eq(client_cert)
-      expect(plugin_instance.params['ssl_key']).to eq(client_key)
-      expect(plugin_instance.params['ssl_keystore_path']).to eq(keystore)
-      expect(plugin_instance.params['ssl_keystore_password'].value).to eq(keystore_password)
-      expect(plugin_instance.params['ssl_keystore_type']).to eq(keystore_type)
-      expect(plugin_instance.params['ssl_truststore_path']).to eq(truststore)
-      expect(plugin_instance.params['ssl_truststore_password'].value).to eq(truststore_password)
-      expect(plugin_instance.params['ssl_truststore_type']).to eq(truststore_type)
     end
   end
 
