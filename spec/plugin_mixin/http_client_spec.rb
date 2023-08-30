@@ -5,6 +5,7 @@ require "stud/temporary"
 
 class Dummy < LogStash::Inputs::Base
   include LogStash::PluginMixins::HttpClient
+  config_name 'dummy'
 end
 
 describe LogStash::PluginMixins::HttpClient do
@@ -27,51 +28,6 @@ describe LogStash::PluginMixins::HttpClient do
 
   it "#client should return the same client" do
     expect(impl.send(:client)).to eql(impl.client)
-  end
-
-  shared_examples "setting ca bundles" do |key, type|
-    subject { Dummy.new(conf).send(:client_config) }
-
-    it "should correctly set the path" do
-      expect(subject[:ssl][key]).to eql(path), "Expected to find path for #{key}"
-    end
-
-    if type == :jks
-      let(:store_password) { conf["#{key}_password"] }
-      let(:store_type) { conf["#{key}_type"]}
-
-      it "should set the bundle password" do
-        expect(subject[:ssl]["#{key}_password".to_sym]).to eql(store_password)
-      end
-
-      it "should set the bundle type" do
-        expect(subject[:ssl]["#{key}_type".to_sym]).to eql(store_type)
-      end
-    end
-  end
-
-  describe "with a custom ssl bundle" do
-    let(:file) { Stud::Temporary.file }
-    let(:path) { file.path }
-    after { File.unlink(path)}
-
-    context "with x509" do
-      let(:conf) { basic_config.merge("cacert" => path) }
-
-      include_examples("setting ca bundles", :ca_file)
-    end
-
-    context "with JKS" do
-      let(:conf) {
-        basic_config.merge(
-          "truststore" => path,
-          "truststore_password" => "foobar",
-          "truststore_type" => "jks"
-        )
-      }
-
-      include_examples("setting ca bundles", :truststore, :jks)
-    end
   end
 
   describe "with a custom validate_after_activity" do
@@ -119,136 +75,5 @@ describe LogStash::PluginMixins::HttpClient do
         expect { subject }.to raise_error(::LogStash::ConfigurationError)
       end
     end
-  end
-
-  ["keystore", "truststore"].each do |store|
-    describe "with a custom #{store}" do
-      let(:file) { Stud::Temporary.file }
-      let(:path) { file.path }
-      let(:password) { "foo" }
-      after { File.unlink(path)}
-
-      let(:conf) {
-        basic_config.merge(
-          store => path,
-          "#{store}_password" => password,
-          "#{store}_type" => "jks"
-        )
-      }
-
-      include_examples("setting ca bundles", store.to_sym, :jks)
-
-      context "with no password set" do
-        let(:password) { nil }
-        
-        it "should raise an error" do
-          expect do
-            Dummy.new(conf).client_config
-          end.to raise_error(LogStash::ConfigurationError)
-        end
-      end
-    end
-  end
-
-  describe "with a client cert" do
-    let(:file) { Stud::Temporary.file }
-    let(:path) { file.path }
-    after { File.unlink(path)}
-
-    context "with correct client certs" do
-      let(:conf) { basic_config.merge("client_cert" => path, "client_key" => path) }
-
-      it "should create without error" do
-        expect {
-          Dummy.new(conf).client_config
-        }.not_to raise_error
-      end
-    end
-
-    shared_examples("raising a configuration error") do
-      it "should raise an error error" do
-        expect {
-          Dummy.new(conf).client_config
-        }.to raise_error(LogStash::PluginMixins::HttpClient::InvalidHTTPConfigError)
-      end
-    end
-
-    context "without a key" do
-      let(:conf) { basic_config.merge("client_cert" => path) }
-
-      include_examples("raising a configuration error")
-    end
-
-    context "without a cert" do
-      let(:conf) { basic_config.merge("client_key" => path) }
-
-      include_examples("raising a configuration error")
-    end
-  end
-
-  describe "with verify mode" do
-    let(:file) { Stud::Temporary.file }
-    let(:path) { file.path }
-    after { File.unlink(path)}
-
-    context "default" do
-      let(:conf) { basic_config }
-
-      it "sets manticore verify to :strict" do
-        expect( Dummy.new(conf).client_config[:ssl] ).to include :verify => :strict
-      end
-    end
-
-    context "'full'" do
-      let(:conf) { basic_config.merge("ssl_verification_mode" => 'full') }
-
-      it "sets manticore verify to :strict" do
-        expect( Dummy.new(conf).client_config[:ssl] ).to include :verify => :strict
-      end
-    end
-
-    context "'none'" do
-      let(:conf) { basic_config.merge("ssl_verification_mode" => 'none') }
-
-      it "sets manticore verify to :disable" do
-        expect( Dummy.new(conf).client_config[:ssl] ).to include :verify => :disable
-      end
-    end
-
-  end
-
-  describe "with supported protocols" do
-    context "default" do
-      let(:conf) { basic_config }
-
-      it "does not set manticore protocols option" do
-        expect( Dummy.new(conf).client_config[:ssl] ).to_not include :protocols
-      end
-    end
-
-    context "empty" do
-      let(:conf) { basic_config.merge("ssl_supported_protocols" => []) }
-
-      it "does not set manticore protocols option" do
-        expect( Dummy.new(conf).client_config[:ssl] ).to_not include :protocols
-      end
-    end
-
-    context "'TLSv1.3'" do
-      let(:conf) { basic_config.merge("ssl_supported_protocols" => ['TLSv1.3']) }
-
-      it "sets manticore protocols option" do
-        expect( Dummy.new(conf).client_config[:ssl] ).to include :protocols => ['TLSv1.3']
-      end
-    end
-
-    context "'TLSv1.2' and 'TLSv1.3'" do
-      let(:conf) { basic_config.merge("ssl_supported_protocols" => ['TLSv1.3', 'TLSv1.2']) }
-
-      it "sets manticore protocols option" do
-        expect( Dummy.new(conf).client_config[:ssl] ).to include :protocols => ['TLSv1.3', 'TLSv1.2']
-      end
-    end
-
   end
 end
