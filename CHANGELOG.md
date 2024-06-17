@@ -1,3 +1,6 @@
+## 7.4.0
+  - Adds new `ssl_enabled` setting for enabling/disabling the SSL configurations [#44](https://github.com/logstash-plugins/logstash-mixin-http_client/pull/44)
+
 ## 7.3.0
   - Adds standardized SSL settings and deprecates their non-standard counterparts. Deprecated settings will continue to work, and will provide pipeline maintainers with guidance toward using their standardized counterparts [#42](https://github.com/logstash-plugins/logstash-mixin-http_client/pull/42)
     - Adds new `ssl_truststore_path`, `ssl_truststore_password`, and `ssl_truststore_type` settings for configuring SSL-trust using a PKCS-12 or JKS trust store, deprecating their `truststore`, `truststore_password`, and `truststore_type` counterparts.

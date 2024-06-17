@@ -75,6 +75,9 @@ module LogStash::PluginMixins::HttpClient
       # See https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/impl/conn/PoolingHttpClientConnectionManager.html#setValidateAfterInactivity(int)[these docs for more info]
       base.config :validate_after_inactivity, :validate => :number, :default => 200
 
+      # Enable/disable the SSL configurations
+      base.config :ssl_enabled, :validate => :boolean, :default => true
+
       # If you need to use a custom X.509 CA (.pem certs) specify the path to that here
       base.config :ssl_certificate_authorities, :validate => :path, :list => :true
 
@@ -188,6 +191,13 @@ module LogStash::PluginMixins::HttpClient
     def ssl_options
 
       options = {}
+
+      unless @ssl_enabled
+        ignored_ssl_settings = original_params.select { |k| k != 'ssl_enabled' && k.start_with?('ssl_') }
+        self.logger.warn("Configured SSL settings are not used when `ssl_enabled` is set to `false`: #{ignored_ssl_settings.keys}") if ignored_ssl_settings.any?
+        return options
+      end
+
       if @ssl_certificate_authorities&.any?
         raise LogStash::ConfigurationError, 'Multiple values on `ssl_certificate_authorities` are not supported by this plugin' if @ssl_certificate_authorities.size > 1
 

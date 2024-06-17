@@ -339,6 +339,32 @@ shared_examples 'a client with standardized ssl options' do
         end
       end
     end
+
+    describe 'with ssl_enabled' do
+      context 'set to false' do
+        let(:basic_config) { super().merge('ssl_enabled' => false) }
+        let(:plugin) { plugin_class.new(basic_config) }
+
+        it 'should not configure the client :ssl' do
+          expect(plugin.client_config[:ssl]).to eq({})
+        end
+
+        context 'and another ssl_* config set' do
+          let(:basic_config) { super().merge('ssl_verification_mode' => 'none') }
+          let(:logger_mock) { double('logger') }
+
+          before(:each) do
+            allow(plugin).to receive(:logger).and_return(logger_mock)
+          end
+
+          it 'should log a warn message' do
+            allow(logger_mock).to receive(:warn)
+            plugin.client_config
+            expect(logger_mock).to have_received(:warn).with('Configured SSL settings are not used when `ssl_enabled` is set to `false`: ["ssl_verification_mode"]')
+          end
+        end
+      end
+    end
   end
 end
 
