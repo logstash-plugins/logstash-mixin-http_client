@@ -46,8 +46,6 @@ end
 
 shared_examples 'an obsolete setting with guidance' do |deprecations_and_guidance|
 
-  let(:logger_stub) { double('Logger').as_null_object }
-
   deprecations_and_guidance.each do |obsolete_setting, canonical_setting_name|
     it "emits an error about the setting `#{obsolete_setting}` now being obsolete and provides guidance to use `#{canonical_setting_name}`" do
       error_text = /The setting `#{obsolete_setting}` in plugin `with_obsolete` is obsolete and is no longer available. Use `#{canonical_setting_name}` instead/i

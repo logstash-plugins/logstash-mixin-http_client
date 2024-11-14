@@ -3,9 +3,6 @@ module LogStash::PluginMixins::HttpClient
     def self.included(base)
       fail ArgumentError unless base <= LogStash::PluginMixins::HttpClient::Implementation
 
-      require 'logstash/plugin_mixins/normalize_config_support'
-      base.include(LogStash::PluginMixins::NormalizeConfigSupport)
-
       base.config :cacert, :obsolete => 'Use `ssl_certificate_authorities` instead'
       base.config :client_cert, :obsolete => 'Use `ssl_certificate` instead'
       base.config :client_key, :obsolete => 'Use `ssl_key` instead'
