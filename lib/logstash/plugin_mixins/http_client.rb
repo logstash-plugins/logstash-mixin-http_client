@@ -19,8 +19,10 @@ module LogStash::PluginMixins::HttpClient
   end
 
   class Adapter < Module
-    def initialize(with_deprecated: false)
+    def initialize(with_deprecated: false, with_obsolete: false)
+       raise ArgumentError, "A plugin cannot support deprecated and obsolete SSL settings" if with_deprecated && with_obsolete
       @include_dep = with_deprecated
+      @include_obsolete = with_obsolete
     end
 
     def included(base)
@@ -28,7 +30,11 @@ module LogStash::PluginMixins::HttpClient
       if @include_dep
         require_relative 'http_client/deprecated_ssl_config_support'
         base.include(DeprecatedSslConfigSupport)
+      elsif @include_obsolete
+        require_relative 'http_client/obsolete_ssl_config_support'
+        base.include(ObsoleteSslConfigSupport)
       end
+
       nil
     end
   end
