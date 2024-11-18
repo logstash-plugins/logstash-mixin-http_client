@@ -1,3 +1,6 @@
+## 7.5.0
+  - Adds new mixin configuration option `with_obsolete` to mark `ssl` options as obsolete
+
 ## 7.4.0
   - Adds new `ssl_enabled` setting for enabling/disabling the SSL configurations [#44](https://github.com/logstash-plugins/logstash-mixin-http_client/pull/44)
 

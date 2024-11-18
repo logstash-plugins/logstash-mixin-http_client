@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
   s.name            = 'logstash-mixin-http_client'
-  s.version         = '7.4.0'
+  s.version         = '7.5.0'
   s.licenses        = ['Apache License (2.0)']
-  s.summary         = "AWS mixins to provide a unified interface for Amazon Webservice"
+  s.summary         = "Mixin to provide consistent config deprecation and obsoletion across HTTP plugins"
   s.description     = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gemname. This gem is not a stand-alone program"
   s.authors         = ["Elastic"]
   s.email           = 'info@elastic.co'

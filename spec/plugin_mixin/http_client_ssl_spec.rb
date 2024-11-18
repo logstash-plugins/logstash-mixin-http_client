@@ -44,6 +44,16 @@ shared_examples 'a deprecated setting with guidance' do |deprecations_and_guidan
   end
 end
 
+shared_examples 'an obsolete setting with guidance' do |deprecations_and_guidance|
+
+  deprecations_and_guidance.each do |obsolete_setting, canonical_setting_name|
+    it "emits an error about the setting `#{obsolete_setting}` now being obsolete and provides guidance to use `#{canonical_setting_name}`" do
+      error_text = /The setting `#{obsolete_setting}` in plugin `with_obsolete` is obsolete and is no longer available. Use `#{canonical_setting_name}` instead/i
+      expect { plugin_class.new(conf)}.to raise_error LogStash::ConfigurationError, error_text
+    end
+  end
+end
+
 shared_examples 'with common ssl options' do
   describe 'with verify mode' do
     let(:file) { Stud::Temporary.file }
@@ -141,6 +151,33 @@ shared_examples("raise an http config error") do |message|
     expect {
       plugin_class.new(conf).client_config
     }.to raise_error(LogStash::PluginMixins::HttpClient::InvalidHTTPConfigError, message)
+  end
+end
+
+shared_examples 'a client with obsolete ssl options' do
+  describe LogStash::PluginMixins::HttpClient do
+    let(:basic_config) { {} }
+    let(:impl) { plugin_class.new(basic_config) }
+    let(:use_deprecated_config) { true }
+
+    include_examples 'with common ssl options'
+
+    [{:name => 'cacert', :canonical_name => 'ssl_certificate_authorities'},
+     {:name => 'client_cert', :canonical_name => 'ssl_certificate'},
+     {:name => 'client_key', :canonical_name => 'ssl_key'},
+     {:name => "keystore", :canonical_name => 'ssl_keystore_path'},
+     {:name => 'truststore', :canonical_name => 'ssl_truststore_path'},
+     {:name => "keystore_password", :canonical_name => "ssl_keystore_password"},
+     {:name => 'truststore_password', :canonical_name => "ssl_truststore_password"},
+     {:name => "keystore_type", :canonical_name => "ssl_keystore_type"},
+     {:name => 'truststore_type', :canonical_name => 'ssl_truststore_type'}
+    ].each do |settings|
+      context "with option #{settings[:name]}" do
+        let(:conf) { basic_config.merge(settings[:name] => 'test_value') }
+
+        it_behaves_like('an obsolete setting with guidance', settings[:name] => settings[:canonical_name])
+      end
+    end
   end
 end
 
@@ -378,6 +415,11 @@ class PluginWithDeprecatedTrue < LogStash::Inputs::Base
   config_name 'with_deprecated'
 end
 
+class PluginWithObsoleteTrue < LogStash::Inputs::Base
+  include LogStash::PluginMixins::HttpClient[:with_obsolete => true]
+  config_name 'with_obsolete'
+end
+
 class PluginWithDeprecatedFalse < LogStash::Inputs::Base
   include LogStash::PluginMixins::HttpClient[:with_deprecated => false]
   config_name 'without_deprecated'
@@ -391,6 +433,10 @@ describe PluginWithNoModuleConfig do
   it 'includes DeprecatedSslConfigSupport module' do
     expect(plugin_class.ancestors).to include(LogStash::PluginMixins::HttpClient::DeprecatedSslConfigSupport)
   end
+
+  it 'does not include ObsoleteSslConfigSupport module' do
+    expect(plugin_class.ancestors).to_not include(LogStash::PluginMixins::HttpClient::ObsoleteSslConfigSupport)
+  end
 end
 
 describe PluginWithDeprecatedFalse do
@@ -401,10 +447,19 @@ describe PluginWithDeprecatedFalse do
   it 'does not include DeprecatedSslConfigSupport module' do
     expect(plugin_class.ancestors).to_not include(LogStash::PluginMixins::HttpClient::DeprecatedSslConfigSupport)
   end
+
+  it 'does not include ObsoleteSslConfigSupport module' do
+    expect(plugin_class.ancestors).to_not include(LogStash::PluginMixins::HttpClient::ObsoleteSslConfigSupport)
+  end
+
 end
 
 describe PluginWithDeprecatedTrue do
   let(:plugin_class) { PluginWithDeprecatedTrue }
+
+  it 'does not include ObsoleteSslConfigSupport module' do
+    expect(plugin_class.ancestors).to_not include(LogStash::PluginMixins::HttpClient::ObsoleteSslConfigSupport)
+  end
 
   it_behaves_like 'a client with deprecated ssl options'
 
@@ -461,4 +516,26 @@ describe PluginWithDeprecatedTrue do
   it 'includes DeprecatedSslConfigSupport module' do
     expect(plugin_class.ancestors).to include(LogStash::PluginMixins::HttpClient::DeprecatedSslConfigSupport)
   end
+end
+
+describe "PluginWithObsoleteAndDeprecatedTrue" do
+  it 'raises an error when trying to create a class with obsolete and deprecated both true' do
+    expect {
+      class PluginWithObsoleteAndDeprecatedTrue < LogStash::Inputs::Base
+        include LogStash::PluginMixins::HttpClient[:with_obsolete => true, :with_deprecated => true]
+        config_name 'with_obsolete_and_deprecated'
+    end }.to raise_error ArgumentError, "A plugin cannot support deprecated and obsolete SSL settings"
+  end
+end
+
+describe PluginWithObsoleteTrue do
+  let(:plugin_class) { PluginWithObsoleteTrue }
+
+  it 'includes ObsoleteSslConfigSupport module' do
+    expect(plugin_class.ancestors).to include(LogStash::PluginMixins::HttpClient::ObsoleteSslConfigSupport)
+  end
+
+  it_behaves_like 'a client with obsolete ssl options'
+
+  it_behaves_like 'a client with standardized ssl options'
 end
