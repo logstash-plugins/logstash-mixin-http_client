@@ -26,10 +26,14 @@ end
 
 shared_examples 'a deprecated setting with guidance' do |deprecations_and_guidance|
 
-  let(:logger_stub) { double('Logger').as_null_object }
+  # logstash-core emits `:deprecated` config warnings through the deprecation logger
+  # on all supported versions. On 8.x it additionally mirrored them to the plugin
+  # logger, but 9.x removed that mirror and uses the deprecation logger only, so
+  # assert on the deprecation logger to work across both.
+  let(:deprecation_logger_stub) { double('DeprecationLogger').as_null_object }
 
   before(:each) do
-    allow(plugin_class).to receive(:logger).and_return(logger_stub)
+    allow(plugin_class).to receive(:deprecation_logger).and_return(deprecation_logger_stub)
   end
 
   deprecations_and_guidance.each do |deprecated_setting_name, canonical_setting_name|
@@ -39,7 +43,7 @@ shared_examples 'a deprecated setting with guidance' do |deprecations_and_guidan
       deprecation_text = "deprecated config setting \"#{deprecated_setting_name}\" set"
       guidance_text = "Use `#{canonical_setting_name}` instead"
 
-      expect(logger_stub).to have_received(:warn).with(a_string_including(deprecation_text).and(including(guidance_text)), anything)
+      expect(deprecation_logger_stub).to have_received(:deprecated).with(a_string_including(deprecation_text).and(including(guidance_text)), anything)
     end
   end
 end
